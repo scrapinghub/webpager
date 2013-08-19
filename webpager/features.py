@@ -4,8 +4,6 @@ from lxml.html.clean import Cleaner
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
-import scipy
-import numpy as np
 
 from .functions import parent_tag, block_length, number_pattern
 from .preprocess import Tagset
@@ -24,6 +22,12 @@ _cleaner = Cleaner(
 
 def tokenize(text):
     return text.split()
+
+def get_anchor_text(anchor):
+    return anchor.text
+
+def get_anchor_attr_text(anchor):
+    return anchor.get('class', '') + anchor.get('id', '')
 
 default_funcs = (parent_tag, block_length, number_pattern)
 
@@ -67,6 +71,9 @@ class HtmlFeaturesExtractor(BaseEstimator):
         return anchors, labels
 
 class AnchorContextTransformer(BaseEstimator, TransformerMixin):
+    """
+    Extract the context features for anchors.
+    """
     def __init__(self, feature_funcs):
         self.feature_funcs = feature_funcs
         self.dict_vectorizer = DictVectorizer()
@@ -86,53 +93,23 @@ class AnchorContextTransformer(BaseEstimator, TransformerMixin):
             d.update(func(x))
         return d
 
-
-class AnchorFeatureTransformer(BaseEstimator, TransformerMixin):
-
+class AnchorTextTransformer(BaseEstimator, TransformerMixin):
     """
-    Extract the features from anchors
+    Extract the text features for anchors.
     """
-
-    def __init__(self, feature_funcs=default_funcs):
-        self.feature_funcs = feature_funcs
-        self._text_vectorizer = CountVectorizer(analyzer='char', ngram_range=(1, 5), min_df=1, binary=True)
-        self._class_vectorizer = CountVectorizer(analyzer='char', ngram_range=(1, 5), min_df=1, binary=True)
-        self._misc_vectorizer = AnchorContextTransformer(feature_funcs)
+    def __init__(self, get_text = lambda x: x.text):
+        self._get_text = get_text
+        self._vectorizer = CountVectorizer(analyzer='char', ngram_range=(1, 5), min_df=1, binary=True)
 
     def get_feature_names(self):
-        feature_names = []
-        feature_names.extend(self._text_vectorizer.get_feature_names())
-        feature_names.extend(self._class_vectorizer.get_feature_names())
-        feature_names.extend(self._misc_vectorizer.get_feature_names())
-        return np.array(feature_names)
+        return self._vectorizer.get_feature_names()
 
     def fit_transform(self, X, y=None):
-        _texts = [anchor.text for anchor in X]
-        _classes = [anchor.get('class', '') + anchor.get('id', '') for anchor in X]
-        texts_grams = self._text_vectorizer.fit_transform(_texts)
-        _class_grams = self._class_vectorizer.fit_transform(_classes)
-        _misc_features = self._misc_vectorizer.fit_transform(X)
-
-        features = []
-        features.append(texts_grams)
-        features.append(_class_grams)
-        features.append(_misc_features)
-        features = scipy.sparse.hstack(features).tocsr()
-
-        return features
+        return self._vectorizer.fit_transform(self._get_text(x) for x in X)
 
     def transform(self, X):
-        _texts = [anchor.text for anchor in X]
-        _classes = [anchor.get('class', '') + anchor.get('id', '') for anchor in X]
+        return self._vectorizer.transform(self._get_text(x) for x in X)
 
-        texts_grams = self._text_vectorizer.transform(_texts)
-        _class_grams = self._class_vectorizer.transform(_classes)
-        _misc_features = self._misc_vectorizer.transform(X)
-
-        features = []
-        features.append(texts_grams)
-        features.append(_class_grams)
-        features.append(_misc_features)
-        features = scipy.sparse.hstack(features).tocsr()
-
-        return features
+AnchorTransformers = [('anchor_text', AnchorTextTransformer(get_anchor_text)),
+                      ('anchor_class_id', AnchorTextTransformer(get_anchor_attr_text)),
+                      ('anchor_misc', AnchorContextTransformer(default_funcs))]
