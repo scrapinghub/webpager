@@ -105,10 +105,12 @@ class AnchorTextTransformer(BaseEstimator, TransformerMixin):
         return self._vectorizer.get_feature_names()
 
     def fit_transform(self, X, y=None):
-        return self._vectorizer.fit_transform(self._get_text(x) for x in X)
+        texts = [self._get_text(x) for x in X]
+        return self._vectorizer.fit_transform(texts)
 
     def transform(self, X):
-        return self._vectorizer.transform(self._get_text(x) for x in X)
+        texts = [self._get_text(x) for x in X]
+        return self._vectorizer.transform(texts)
 
 AnchorTransformers = [('anchor_text', AnchorTextTransformer(get_anchor_text)),
                       ('anchor_class_id', AnchorTextTransformer(get_anchor_attr_text)),

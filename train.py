@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix, classification_report, accuracy_sc
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import FeatureUnion
 import numpy as np
-
+from os.path import join
 from webpager.features import HtmlFeaturesExtractor, AnchorTransformers
 
 
@@ -56,6 +56,6 @@ def print_topN(vectorizer, clf, n=20):
 print '-' * 80
 print_topN(anchorFeatGen, clf)
 
-joblib.dump(htmlFeatGen, 'htmlFeatGen.joblib.pkl', compress=9)
-joblib.dump(anchorFeatGen, 'anchorFeatGen.joblib.pkl', compress=9)
-joblib.dump(clf, 'clf.joblib.pkl', compress=9)
+joblib.dump(htmlFeatGen, join('webpager', 'models', 'htmlFeatGen.joblib.pkl'), compress=9)
+joblib.dump(anchorFeatGen, join('webpager', 'models', 'anchorFeatGen.joblib.pkl'), compress=9)
+joblib.dump(clf, join('webpager', 'models', 'clf.joblib.pkl'), compress=9)
