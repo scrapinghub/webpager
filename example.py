@@ -8,15 +8,12 @@ from urllib2 import urlopen
 from urlparse import urljoin
 import sys
 from w3lib.encoding import html_to_unicode
-from webpager.models import get_models
+from webpager import WebPager
 
-htmlFeatGen, anchorFeatGen, clf = get_models()
+webpager = WebPager()
 url = sys.argv[1]
 html = urlopen(url).read()
 _, html = html_to_unicode(None, html)
-anchors, _ = htmlFeatGen.fit_transform(html)
-documents = anchorFeatGen.transform(anchors)
-labels = clf.predict(documents)
 
-for anchor, label in zip(anchors, labels):
+for anchor, label in webpager.paginate(html):
     print urljoin(url, anchor.get('href')), label

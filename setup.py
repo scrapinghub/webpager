@@ -8,4 +8,7 @@ setup(name='webpager',
       author_email="",
       install_requires=['scikit-learn', 'lxml'],
       packages=find_packages(),
+      package_data = {
+          'webpager.models': ['*.pkl'],
+      },
 )
