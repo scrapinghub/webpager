@@ -10,10 +10,11 @@ import sys
 from w3lib.encoding import html_to_unicode
 from webpager import WebPager
 
-webpager = WebPager()
-url = sys.argv[1]
-html = urlopen(url).read()
-_, html = html_to_unicode(None, html)
+if __name__ == '__main__':
+    webpager = WebPager()
+    url = sys.argv[1]
+    html = urlopen(url).read()
+    _, html = html_to_unicode(None, html)
 
-for anchor, label in webpager.paginate(html):
-    print urljoin(url, anchor.get('href')), label
+    for anchor, label in webpager.paginate(html):
+        print urljoin(url, anchor.get('href')), label
