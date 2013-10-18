@@ -1,14 +1,13 @@
 import os
-from sklearn.dummy import DummyClassifier
+from os.path import join
+
 from sklearn.externals import joblib
-from sklearn.metrics import confusion_matrix, classification_report, accuracy_score, recall_score, precision_score
+from sklearn.metrics import confusion_matrix, accuracy_score, recall_score, precision_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import FeatureUnion
 from sklearn.cross_validation import train_test_split
-import numpy as np
-from os.path import join
-from webpager.features import HtmlFeaturesExtractor, AnchorTransformers
 
+from webpager.features import HtmlFeaturesExtractor, AnchorTransformers
 
 def tagged_data(folder):
     for fname in os.listdir(folder):
