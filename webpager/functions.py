@@ -1,5 +1,7 @@
+from .levenshtein_cython import levenshtein_distance
 
-def block_length(anchor):
+def block_length(x):
+    anchor, _ = x
     tokens = anchor.text.split()
     if len(tokens) == 1:
         bl = '1'
@@ -13,10 +15,12 @@ def block_length(anchor):
         bl = 'large'
     return {'block_length': bl}
 
-def parent_tag(anchor):
+def parent_tag(x):
+    anchor, _ = x
     return {'parent_tag': anchor.getparent().tag}
 
-def number_pattern(anchor):
+def number_pattern(x):
+    anchor, _ = x
     tokens = anchor.text.split()
     digits = [1 for token in tokens if token.isdigit()]
     if len(digits) == len(tokens):
@@ -27,3 +31,9 @@ def number_pattern(anchor):
         np = 'no'
     return {'number_pattern': np}
 
+def url_edit_distance(x):
+    anchor, baseurl = x
+    href = anchor.get('href', '')
+    d = levenshtein_distance(baseurl, href)
+    # normalize
+    return float(d) / max(len(baseurl), len(href))
