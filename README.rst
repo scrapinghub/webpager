@@ -29,7 +29,7 @@ Load web pager and classify.::
     >>> webpager = WebPager()
     >>> for anchor, label in webpager.paginate(html, url):
     >>>     if label:
-    >>>	         print urljoin(url, anchor.get('href'))
+    >>>	         print anchor.get('href')
 
     http://www.tripadvisor.com/Restaurant_Review-g294217-d3639657-Reviews-or10-Trattoria_Caffe_Monteverdi-Hong_Kong.html#REVIEWS
     http://www.tripadvisor.com/Restaurant_Review-g294217-d3639657-Reviews-or40-Trattoria_Caffe_Monteverdi-Hong_Kong.html#REVIEWS
@@ -38,4 +38,4 @@ Load web pager and classify.::
 
 Training
 ========
-see `train.py` for more details.
+see `train.ipynb<https://github.com/scrapinghub/webpager/blob/master/train.ipynb>`_ for more details.

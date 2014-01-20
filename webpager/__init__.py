@@ -6,9 +6,9 @@ class WebPager(object):
         self.anchorFeatGen, self.clf = get_models()
         self.htmlFeatGen = HtmlFeaturesExtractor()
 
-    def paginate(self, html, base_url):
-        anchors, _ = self.htmlFeatGen.fit_transform(html, base_url)
-        documents = self.anchorFeatGen.transform([(anchor, base_url) for anchor in anchors])
+    def paginate(self, html, url):
+        anchors, _ = self.htmlFeatGen.fit_transform((html, url))
+        documents = self.anchorFeatGen.transform([(anchor, url) for anchor in anchors])
         labels = self.clf.predict(documents)
 
         return zip(anchors, labels)
