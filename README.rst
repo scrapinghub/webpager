@@ -38,4 +38,7 @@ Load web pager and classify.::
 
 Training
 ========
-see `train.ipynb<https://github.com/scrapinghub/webpager/blob/master/train.ipynb>`_ for more details.
+
+see train.ipynb_ for more details.
+
+.. _train.ipynb: http://nbviewer.ipython.org/github/scrapinghub/webpager/blob/master/train.ipynb
